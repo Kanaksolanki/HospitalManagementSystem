@@ -1,0 +1,4 @@
+drug_a,drug_b,severity,note
+aspirin,warfarin,high,Increased bleeding risk
+ibuprofen,warfarin,high,Increased bleeding risk
+metformin,alcohol,medium,Risk of lactic acidosis

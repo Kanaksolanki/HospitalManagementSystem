@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+env/
+*.egg-info/
+
+# Django
+db.sqlite3
+media/*
+!media/.gitkeep
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Env files
+.env
+.env.local
+
+# AI models (large files — decide with team if these should be tracked)
+ai-module/models/*.pkl
+ai-module/models/*.joblib
+
+# Editor
+.vscode/
+.DS_Store
