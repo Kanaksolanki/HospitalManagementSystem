@@ -1,5 +1,191 @@
-body {
+@import "./tokens.css";
+
+* { box-sizing: border-box; }
+
+html, body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: #f5f7fa;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
 }
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0 0 4px 0;
+  letter-spacing: -0.01em;
+}
+h1 { font-size: 28px; }
+h2 { font-size: 20px; }
+h3 { font-size: 16px; }
+
+p { color: var(--ink-soft); line-height: 1.55; }
+
+a { color: var(--primary); text-decoration: none; }
+
+button, input, select, textarea { font-family: inherit; font-size: 14px; }
+
+button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ---------- Layout ---------- */
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+.page-header {
+  margin-bottom: 20px;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 6px;
+  display: block;
+}
+.grid {
+  display: grid;
+  gap: 16px;
+}
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 720px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+/* ---------- Card ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+.card-hover {
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.card-hover:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 18px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-secondary { background: var(--surface-alt); color: var(--ink); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--border); }
+.btn-danger { background: var(--danger-tint); color: var(--danger); }
+.btn-ghost { background: transparent; color: var(--primary); padding: 8px 4px; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-block { width: 100%; justify-content: center; }
+
+/* ---------- Form ---------- */
+.field { margin-bottom: 16px; }
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--primary);
+}
+.field-hint { font-size: 12px; color: var(--ink-faint); margin-top: 4px; }
+
+/* ---------- Badge / Pill ---------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.badge-primary { background: var(--primary-tint); color: var(--primary-dark); }
+.badge-success { background: var(--success-tint); color: var(--success); }
+.badge-danger { background: var(--danger-tint); color: var(--danger); }
+.badge-accent { background: var(--accent-tint); color: #8A5A1E; }
+.badge-neutral { background: var(--surface-alt); color: var(--ink-soft); }
+
+/* ---------- ID tag (patient/doctor IDs, mono) ---------- */
+.id-tag {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+  background: var(--surface-alt);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* ---------- Pulse divider (signature element) ---------- */
+.pulse-divider {
+  width: 100%;
+  height: 24px;
+  margin: 20px 0;
+  display: block;
+}
+.pulse-divider path {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 1.5;
+}
+.pulse-divider.active path {
+  stroke: var(--primary);
+}
+
+/* ---------- Empty state ---------- */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--ink-faint);
+}
+
+/* ---------- Steps (real sequence: dept -> doctor -> date -> time) ---------- */
+.steps {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.step {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-faint);
+  text-align: center;
+  border: 1px solid transparent;
+}
+.step.done { background: var(--primary-tint); color: var(--primary-dark); }
+.step.active { background: var(--surface); border-color: var(--primary); color: var(--primary); }

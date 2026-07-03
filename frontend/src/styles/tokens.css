@@ -1,0 +1,32 @@
+:root {
+  /* Color */
+  --bg: #F5F7F6;
+  --surface: #FFFFFF;
+  --surface-alt: #EDF2F0;
+  --ink: #17242A;
+  --ink-soft: #57696F;
+  --ink-faint: #8B9A9E;
+  --primary: #2A7F7E;
+  --primary-dark: #1F5F5E;
+  --primary-tint: #E3F0EE;
+  --accent: #D98E3D;
+  --accent-tint: #FAECD8;
+  --success: #4C9A6A;
+  --success-tint: #E6F3EA;
+  --danger: #C1443D;
+  --danger-tint: #FBEAE9;
+  --border: #DCE3E1;
+
+  /* Type */
+  --font-display: 'Newsreader', Georgia, serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+
+  /* Layout */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(23,36,42,0.06);
+  --shadow: 0 1px 2px rgba(23,36,42,0.05), 0 6px 16px rgba(23,36,42,0.06);
+  --nav-height: 64px;
+}
