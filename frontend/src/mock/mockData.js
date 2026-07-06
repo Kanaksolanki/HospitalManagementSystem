@@ -8,10 +8,54 @@ export const mockUsers = [
 ];
 
 export const mockDoctors = [
+  // Cardiologist
   { id: 1, doctor_id: "DOC0012", name: "Dr. Sharma", specialization: "Cardiologist", rating: 4.8, visiting_hours: "9:00 AM – 2:00 PM", available_days: ["Mon", "Wed", "Fri"] },
-  { id: 2, doctor_id: "DOC0013", name: "Dr. Verma", specialization: "Dermatologist", rating: 4.5, visiting_hours: "11:00 AM – 4:00 PM", available_days: ["Tue", "Thu"] },
-  { id: 3, doctor_id: "DOC0014", name: "Dr. Iyer", specialization: "General Physician", rating: 4.6, visiting_hours: "9:00 AM – 1:00 PM", available_days: ["Mon", "Tue", "Wed", "Thu", "Fri"] },
-  { id: 4, doctor_id: "DOC0015", name: "Dr. Nair", specialization: "Orthopedic", rating: 4.7, visiting_hours: "2:00 PM – 6:00 PM", available_days: ["Mon", "Thu"] },
+  { id: 2, doctor_id: "DOC0024", name: "Dr. Kulkarni", specialization: "Cardiologist", rating: 4.6, visiting_hours: "3:00 PM – 6:00 PM", available_days: ["Tue", "Thu"] },
+
+  // Dermatologist
+  { id: 3, doctor_id: "DOC0013", name: "Dr. Verma", specialization: "Dermatologist", rating: 4.5, visiting_hours: "11:00 AM – 4:00 PM", available_days: ["Tue", "Thu"] },
+  { id: 4, doctor_id: "DOC0025", name: "Dr. Chatterjee", specialization: "Dermatologist", rating: 4.7, visiting_hours: "10:00 AM – 1:00 PM", available_days: ["Mon", "Wed", "Fri"] },
+
+  // General Physician
+  { id: 5, doctor_id: "DOC0014", name: "Dr. Iyer", specialization: "General Physician", rating: 4.6, visiting_hours: "9:00 AM – 1:00 PM", available_days: ["Mon", "Tue", "Wed", "Thu", "Fri"] },
+  { id: 6, doctor_id: "DOC0026", name: "Dr. Pillai", specialization: "General Physician", rating: 4.5, visiting_hours: "2:00 PM – 6:00 PM", available_days: ["Mon", "Tue", "Wed", "Thu", "Fri"] },
+  { id: 7, doctor_id: "DOC0027", name: "Dr. Agarwal", specialization: "General Physician", rating: 4.8, visiting_hours: "8:00 AM – 12:00 PM", available_days: ["Sat"] },
+
+  // Orthopedic
+  { id: 8, doctor_id: "DOC0015", name: "Dr. Nair", specialization: "Orthopedic", rating: 4.7, visiting_hours: "2:00 PM – 6:00 PM", available_days: ["Mon", "Thu"] },
+  { id: 9, doctor_id: "DOC0028", name: "Dr. Deshmukh", specialization: "Orthopedic", rating: 4.4, visiting_hours: "9:00 AM – 12:00 PM", available_days: ["Wed", "Fri"] },
+
+  // Pediatrician
+  { id: 10, doctor_id: "DOC0016", name: "Dr. Khan", specialization: "Pediatrician", rating: 4.9, visiting_hours: "10:00 AM – 3:00 PM", available_days: ["Mon", "Wed", "Fri"] },
+  { id: 11, doctor_id: "DOC0029", name: "Dr. Sinha", specialization: "Pediatrician", rating: 4.6, visiting_hours: "1:00 PM – 5:00 PM", available_days: ["Tue", "Thu"] },
+
+  // Neurologist
+  { id: 12, doctor_id: "DOC0017", name: "Dr. Reddy", specialization: "Neurologist", rating: 4.7, visiting_hours: "1:00 PM – 5:00 PM", available_days: ["Tue", "Thu"] },
+  { id: 13, doctor_id: "DOC0030", name: "Dr. Bose", specialization: "Neurologist", rating: 4.5, visiting_hours: "9:00 AM – 12:00 PM", available_days: ["Mon", "Fri"] },
+
+  // Gynecologist
+  { id: 14, doctor_id: "DOC0018", name: "Dr. Gupta", specialization: "Gynecologist", rating: 4.8, visiting_hours: "9:00 AM – 12:00 PM", available_days: ["Mon", "Wed", "Fri"] },
+  { id: 15, doctor_id: "DOC0031", name: "Dr. Krishnan", specialization: "Gynecologist", rating: 4.6, visiting_hours: "2:00 PM – 5:00 PM", available_days: ["Tue", "Thu"] },
+
+  // ENT Specialist
+  { id: 16, doctor_id: "DOC0019", name: "Dr. Bhatt", specialization: "ENT Specialist", rating: 4.4, visiting_hours: "3:00 PM – 6:00 PM", available_days: ["Tue", "Thu", "Sat"] },
+  { id: 17, doctor_id: "DOC0032", name: "Dr. Shetty", specialization: "ENT Specialist", rating: 4.6, visiting_hours: "9:00 AM – 1:00 PM", available_days: ["Mon", "Wed"] },
+
+  // Psychiatrist
+  { id: 18, doctor_id: "DOC0020", name: "Dr. Malhotra", specialization: "Psychiatrist", rating: 4.6, visiting_hours: "11:00 AM – 2:00 PM", available_days: ["Wed", "Fri"] },
+  { id: 19, doctor_id: "DOC0033", name: "Dr. Choudhury", specialization: "Psychiatrist", rating: 4.7, visiting_hours: "3:00 PM – 6:00 PM", available_days: ["Mon", "Thu"] },
+
+  // Dentist
+  { id: 20, doctor_id: "DOC0021", name: "Dr. Joshi", specialization: "Dentist", rating: 4.5, visiting_hours: "10:00 AM – 4:00 PM", available_days: ["Mon", "Tue", "Wed", "Thu", "Fri"] },
+  { id: 21, doctor_id: "DOC0034", name: "Dr. Kapoor", specialization: "Dentist", rating: 4.6, visiting_hours: "9:00 AM – 1:00 PM", available_days: ["Sat"] },
+
+  // Ophthalmologist
+  { id: 22, doctor_id: "DOC0022", name: "Dr. Rao", specialization: "Ophthalmologist", rating: 4.7, visiting_hours: "9:00 AM – 1:00 PM", available_days: ["Mon", "Thu", "Sat"] },
+  { id: 23, doctor_id: "DOC0035", name: "Dr. Varma", specialization: "Ophthalmologist", rating: 4.5, visiting_hours: "2:00 PM – 5:00 PM", available_days: ["Tue", "Fri"] },
+
+  // Endocrinologist
+  { id: 24, doctor_id: "DOC0023", name: "Dr. Menon", specialization: "Endocrinologist", rating: 4.6, visiting_hours: "2:00 PM – 5:00 PM", available_days: ["Tue", "Fri"] },
+  { id: 25, doctor_id: "DOC0036", name: "Dr. Trivedi", specialization: "Endocrinologist", rating: 4.4, visiting_hours: "10:00 AM – 1:00 PM", available_days: ["Mon", "Wed"] },
 ];
 
 export const mockSlots = ["9:00 AM", "9:30 AM", "10:00 AM", "11:00 AM", "2:00 PM", "2:30 PM"];
