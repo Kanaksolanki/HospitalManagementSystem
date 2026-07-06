@@ -1,34 +1,37 @@
 import { useState } from "react";
-import { mockReports } from "../../mock/mockData";
+import { useAuth } from "../../context/AuthContext";
+import { mockPatients } from "../../mock/mockData";
 import PulseDivider from "../../components/common/PulseDivider";
 import Badge from "../../components/common/Badge";
 
 const REPORT_TYPES = ["Blood Test", "MRI", "X-Ray", "CT Scan", "ECG", "Prescription"];
 
 export default function UploadReport() {
+  const { user } = useAuth();
+  const patient = mockPatients.find((p) => p.patient_id === user?.displayId);
+
   const [reportType, setReportType] = useState(REPORT_TYPES[0]);
   const [file, setFile] = useState(null);
-  const [reports, setReports] = useState(mockReports);
+  const [reports, setReports] = useState(patient?.reports || []);
   const [processing, setProcessing] = useState(false);
 
   const handleUpload = (e) => {
     e.preventDefault();
-    if (!file) return;
+    if (!file || !patient) return;
     setProcessing(true);
     // TODO: replace with patientApi.uploadReport(formData) — backend calls
     // ai-module/report_summarizer.py and returns the ai_summary below.
     setTimeout(() => {
-      setReports([
-        {
-          id: Date.now(),
-          report_type: reportType,
-          date: new Date().toISOString().slice(0, 10),
-          hospital: "Uploaded by patient",
-          ai_summary: "Report received. Summary will appear once the AI module processes it.",
-          flags: [],
-        },
-        ...reports,
-      ]);
+      const newReport = {
+        id: Date.now(),
+        report_type: reportType,
+        date: new Date().toISOString().slice(0, 10),
+        hospital: "Uploaded by patient",
+        ai_summary: "Report received. Summary will appear once the AI module processes it.",
+        flags: [],
+      };
+      patient.reports.unshift(newReport); // mutate shared record so doctor side sees it too
+      setReports([...patient.reports]);
       setFile(null);
       setProcessing(false);
     }, 900);

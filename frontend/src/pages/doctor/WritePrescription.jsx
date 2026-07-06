@@ -18,6 +18,13 @@ function checkInteractions(medicineNames) {
   return null;
 }
 
+const rowInputStyle = {
+  minWidth: 0,
+  border: "1px solid var(--border)",
+  borderRadius: "var(--radius-sm)",
+  padding: "8px 10px",
+};
+
 export default function WritePrescription() {
   const { patientId } = useParams();
   const navigate = useNavigate();
@@ -41,7 +48,17 @@ export default function WritePrescription() {
 
   const handleSave = (e) => {
     e.preventDefault();
+    if (!patient) return;
     // TODO: replace with doctorApi.writePrescription({ patient_id, medicines, notes, followup_date })
+    const newPrescription = {
+      id: Date.now(),
+      doctor_name: "Dr. Sharma", // TODO: pull from logged-in doctor once real auth exists
+      date: new Date().toISOString().slice(0, 10),
+      medicines: medicines.filter((m) => m.name),
+      notes,
+      followup_date: followup || null,
+    };
+    patient.prescriptions.unshift(newPrescription); // mutate shared record so patient side sees it too
     setSaved(true);
   };
 
@@ -76,11 +93,11 @@ export default function WritePrescription() {
         {medicines.map((m, i) => (
           <div key={i} style={{ display: "flex", gap: 8, marginTop: 8, marginBottom: 8 }}>
             <input placeholder="Name" value={m.name} onChange={(e) => updateMedicine(i, "name", e.target.value)}
-              style={{ flex: 2, border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "8px 10px" }} />
+              style={{ ...rowInputStyle, flex: 2 }} />
             <input placeholder="Dosage" value={m.dosage} onChange={(e) => updateMedicine(i, "dosage", e.target.value)}
-              style={{ flex: 1, border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "8px 10px" }} />
+              style={{ ...rowInputStyle, flex: 1 }} />
             <input placeholder="Frequency" value={m.frequency} onChange={(e) => updateMedicine(i, "frequency", e.target.value)}
-              style={{ flex: 1, border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "8px 10px" }} />
+              style={{ ...rowInputStyle, flex: 1 }} />
             {medicines.length > 1 && (
               <button type="button" className="btn btn-ghost" onClick={() => removeMedicine(i)}>✕</button>
             )}

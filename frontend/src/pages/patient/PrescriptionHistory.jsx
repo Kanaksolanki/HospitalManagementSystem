@@ -1,8 +1,13 @@
-import { mockPrescriptions } from "../../mock/mockData";
+import { useAuth } from "../../context/AuthContext";
+import { mockPatients } from "../../mock/mockData";
 import PulseDivider from "../../components/common/PulseDivider";
 import EmptyState from "../../components/common/EmptyState";
 
 export default function PrescriptionHistory() {
+  const { user } = useAuth();
+  const patient = mockPatients.find((p) => p.patient_id === user?.displayId);
+  const prescriptions = patient?.prescriptions || [];
+
   return (
     <div className="page">
       <div className="page-header">
@@ -11,11 +16,11 @@ export default function PrescriptionHistory() {
       </div>
       <PulseDivider />
 
-      {mockPrescriptions.length === 0 ? (
+      {prescriptions.length === 0 ? (
         <EmptyState title="No prescriptions yet" message="Prescriptions from your visits will appear here." />
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {mockPrescriptions.map((p) => (
+          {prescriptions.map((p) => (
             <div key={p.id} className="card">
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <h3>{p.doctor_name}</h3>

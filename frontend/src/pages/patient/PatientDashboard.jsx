@@ -2,12 +2,13 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import PulseDivider from "../../components/common/PulseDivider";
 import Badge from "../../components/common/Badge";
-import { mockAppointments, mockReports } from "../../mock/mockData";
+import { mockAppointments, mockPatients } from "../../mock/mockData";
 
 export default function PatientDashboard() {
   const { user } = useAuth();
+  const patient = mockPatients.find((p) => p.patient_id === user?.displayId);
   const upcoming = mockAppointments.find((a) => a.status === "upcoming");
-  const latestReport = mockReports[0];
+  const latestReport = patient?.reports?.[0];
 
   return (
     <div className="page">
@@ -36,12 +37,18 @@ export default function PatientDashboard() {
 
         <div className="card">
           <span className="eyebrow">Latest report</span>
-          <h3>{latestReport.report_type}</h3>
-          <p style={{ margin: "4px 0 8px" }}>{latestReport.date}</p>
-          {latestReport.flags.length > 0 ? (
-            <Badge variant="accent">{latestReport.flags[0]}</Badge>
+          {latestReport ? (
+            <>
+              <h3>{latestReport.report_type}</h3>
+              <p style={{ margin: "4px 0 8px" }}>{latestReport.date}</p>
+              {latestReport.flags.length > 0 ? (
+                <Badge variant="accent">{latestReport.flags[0]}</Badge>
+              ) : (
+                <Badge variant="success">No flags</Badge>
+              )}
+            </>
           ) : (
-            <Badge variant="success">No flags</Badge>
+            <p>No reports yet.</p>
           )}
         </div>
 
