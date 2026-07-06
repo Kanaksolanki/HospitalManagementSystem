@@ -1,5 +1,31 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
+from django.shortcuts import get_object_or_404
 
-# Define API views here. See API_CONTRACT.md for expected request/response shapes.
+from .models import Patient
+from .serializers import PatientSerializer
+
+
+class PatientDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        patient = get_object_or_404(Patient, pk=pk)
+        return Response(PatientSerializer(patient).data)
+
+
+class PatientHistoryView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        patient = get_object_or_404(Patient, pk=pk)
+        # reports/prescriptions/appointments apps aren't built yet —
+        # wire these in once those apps exist
+        data = {
+            "patient": PatientSerializer(patient).data,
+            "reports": [],
+            "prescriptions": [],
+            "past_appointments": [],
+        }
+        return Response(data)
