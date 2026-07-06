@@ -1,0 +1,12 @@
+{
+  "hemoglobin": {"unit": "g/dL", "low": 12.0, "high": 16.5, "label": "Hemoglobin"},
+  "wbc": {"unit": "/uL", "low": 4000, "high": 11000, "label": "WBC Count"},
+  "platelets": {"unit": "/uL", "low": 150000, "high": 410000, "label": "Platelet Count"},
+  "fasting_sugar": {"unit": "mg/dL", "low": 70, "high": 100, "label": "Fasting Blood Sugar"},
+  "total_cholesterol": {"unit": "mg/dL", "low": 0, "high": 200, "label": "Total Cholesterol"},
+  "ldl": {"unit": "mg/dL", "low": 0, "high": 100, "label": "LDL"},
+  "hdl": {"unit": "mg/dL", "low": 40, "high": 999, "label": "HDL"},
+  "triglycerides": {"unit": "mg/dL", "low": 0, "high": 150, "label": "Triglycerides"},
+  "heart_rate": {"unit": "bpm", "low": 60, "high": 100, "label": "Heart Rate"},
+  "creatinine": {"unit": "mg/dL", "low": 0.6, "high": 1.3, "label": "Creatinine"}
+}
