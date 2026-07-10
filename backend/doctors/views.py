@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
+from accounts.permissions import IsDoctor
 from django.shortcuts import get_object_or_404
 
 from .models import Doctor
@@ -11,7 +12,7 @@ from patients.serializers import PatientSerializer
 
 class DoctorListView(APIView):
     """GET /api/doctors/ -> list all doctors, optional ?specialization=... filter"""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsDoctor]
 
     def get(self, request):
         doctors = Doctor.objects.filter(is_approved=True)
