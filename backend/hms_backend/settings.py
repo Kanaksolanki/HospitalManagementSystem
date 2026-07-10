@@ -10,6 +10,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+import sys
+
+AI_MODULE_DIR = BASE_DIR.parent / "ai-module"
+sys.path.insert(0, str(AI_MODULE_DIR))
+
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key-change-me")
 DEBUG = True
