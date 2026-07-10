@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
+from accounts.permissions import IsPatient, IsDoctor
+from accounts.permissions import IsPatient
 
 from .models import MedicalReport
 from .serializers import MedicalReportSerializer
@@ -11,7 +13,7 @@ from report_summarizer import summarize_report
 
 class UploadReportView(APIView):
     """POST /api/reports/upload/ -> patient uploads a new report"""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsPatient]
 
     def post(self, request):
         try:
@@ -48,7 +50,7 @@ class UploadReportView(APIView):
 
 class MyReportsView(APIView):
     """GET /api/reports/mine/ -> the logged-in patient's own reports"""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsPatient]
 
     def get(self, request):
         try:

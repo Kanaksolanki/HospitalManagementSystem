@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
+from accounts.permissions import IsPatient, IsDoctor
 
 from .models import Prescription
 from .serializers import PrescriptionSerializer
@@ -12,7 +13,7 @@ from drug_interaction_checker import check_drug_interaction
 
 class WritePrescriptionView(APIView):
     """POST /api/prescriptions/ -> doctor writes a new prescription"""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsDoctor]
 
     def post(self, request):
         try:
@@ -55,7 +56,7 @@ class WritePrescriptionView(APIView):
 
 class MyPrescriptionsView(APIView):
     """GET /api/prescriptions/mine/ -> the logged-in patient's own prescriptions"""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsPatient]
 
     def get(self, request):
         try:

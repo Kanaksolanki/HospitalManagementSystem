@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
+from accounts.permissions import IsPatient, IsDoctor
 from datetime import date
 
 from .models import Appointment
@@ -11,8 +12,8 @@ from doctors.models import Doctor
 
 class BookAppointmentView(APIView):
     """POST /api/appointments/ -> book a new appointment"""
-    permission_classes = [permissions.IsAuthenticated]
-
+    permission_classes = [IsPatient]
+    
     def post(self, request):
         try:
             patient = Patient.objects.get(user=request.user)
@@ -50,7 +51,7 @@ class MyAppointmentsView(APIView):
 
 class DoctorQueueView(APIView):
     """GET /api/appointments/queue/ -> today's queue for the logged-in doctor"""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsDoctor]
 
     def get(self, request):
         try:
