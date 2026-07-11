@@ -2,3 +2,20 @@ drug_a,drug_b,severity,note
 aspirin,warfarin,high,Increased bleeding risk
 ibuprofen,warfarin,high,Increased bleeding risk
 metformin,alcohol,medium,Risk of lactic acidosis
+warfarin,amiodarone,high,Increased anticoagulant effect and bleeding risk
+warfarin,ciprofloxacin,medium,Elevated INR and increased bleeding risk
+lisinopril,potassium chloride,medium,Risk of hyperkalemia
+sertraline,tramadol,high,Risk of serotonin syndrome
+fluoxetine,tramadol,high,Risk of serotonin syndrome
+simvastatin,clarithromycin,high,Increased risk of myopathy and rhabdomyolysis
+atorvastatin,clarithromycin,medium,Increased risk of myopathy
+sildenafil,nitroglycerin,high,Severe hypotension risk
+methotrexate,ibuprofen,high,Reduced methotrexate clearance and increased toxicity
+digoxin,furosemide,medium,Hypokalemia increases risk of digoxin toxicity
+clopidogrel,omeprazole,medium,Reduced antiplatelet effectiveness
+lithium,hydrochlorothiazide,high,Risk of lithium toxicity
+theophylline,ciprofloxacin,medium,Increased theophylline levels and toxicity risk
+amlodipine,simvastatin,medium,Increased statin exposure and myopathy risk
+metformin,contrast dye,high,Risk of contrast-induced lactic acidosis
+azithromycin,warfarin,medium,Increased bleeding risk
+insulin glargine,alcohol,medium,Increased risk of hypoglycemia

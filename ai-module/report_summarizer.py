@@ -41,6 +41,15 @@ FIELD_PATTERNS = {
     "triglycerides": [r"triglycerides\s*[:\-]?\s*([\d.]+)"],
     "heart_rate": [r"heart\s*rate\s*[:\-]?\s*([\d.]+)"],
     "creatinine": [r"creatinine\s*[:\-]?\s*([\d.]+)"],
+    "alt": [r"\balt\s*[:\-]?\s*([\d.]+)", r"alanine\s*(?:transaminase|aminotransferase)\s*[:\-]?\s*([\d.]+)"],
+    "ast": [r"\bast\s*[:\-]?\s*([\d.]+)", r"aspartate\s*(?:transaminase|aminotransferase)\s*[:\-]?\s*([\d.]+)"],
+    "tsh": [r"\btsh\s*[:\-]?\s*([\d.]+)"],
+    # NOTE: real HbA1c interpretation is categorical (normal <5.7%, prediabetes
+    # 5.7-6.4%, diabetes >=6.5%), not a simple low/high band like the other
+    # fields here. We're using the same low/high mechanism for consistency in
+    # this MVP, so "high" for HbA1c really means "at or above normal" -- call
+    # this out if it comes up in a demo/interview.
+    "hba1c": [r"hba1c\s*[:\-]?\s*([\d.]+)", r"glycated\s*hemoglobin\s*[:\-]?\s*([\d.]+)"],
 }
 
 

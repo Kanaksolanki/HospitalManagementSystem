@@ -1,0 +1,30 @@
+[
+  {
+    "label": "Low risk — young, normal vitals",
+    "patient_data": {"age": 22, "bp": 74, "sugar": 88, "weight": 58}
+  },
+  {
+    "label": "Low risk — healthy middle-aged",
+    "patient_data": {"age": 41, "bp": 78, "sugar": 92, "weight": 65}
+  },
+  {
+    "label": "Medium risk — borderline glucose",
+    "patient_data": {"age": 47, "bp": 84, "sugar": 118, "weight": 74}
+  },
+  {
+    "label": "Medium risk — mild hypertension, older",
+    "patient_data": {"age": 55, "bp": 88, "sugar": 105, "weight": 80}
+  },
+  {
+    "label": "High risk — elevated glucose and BP",
+    "patient_data": {"age": 58, "bp": 96, "sugar": 152, "weight": 88}
+  },
+  {
+    "label": "High risk — older with high glucose",
+    "patient_data": {"age": 63, "bp": 90, "sugar": 168, "weight": 82}
+  },
+  {
+    "label": "High risk — severe hyperglycemia",
+    "patient_data": {"age": 60, "bp": 100, "sugar": 190, "weight": 95}
+  }
+]

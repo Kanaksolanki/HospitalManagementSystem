@@ -32,6 +32,9 @@ User = get_user_model()
 
 DEFAULT_PASSWORD = "demo1234"
 
+# Covers every specialization the frontend already expects (see
+# frontend/src/mock/mockData.js) so BookAppointment always has a doctor to
+# show for every department in the demo.
 DOCTORS = [
     {"first": "Anil", "last": "Sharma", "specialization": "Cardiologist", "experience": 14,
      "qualification": "MBBS, MD (Cardiology)", "available_days": ["Mon", "Wed", "Fri"],
@@ -48,6 +51,27 @@ DOCTORS = [
     {"first": "Karan", "last": "Mehta", "specialization": "Endocrinologist", "experience": 9,
      "qualification": "MBBS, DM (Endocrinology)", "available_days": ["Wed", "Fri"],
      "visiting_hours": "10:00 AM - 1:00 PM"},
+    {"first": "Farah", "last": "Khan", "specialization": "Pediatrician", "experience": 13,
+     "qualification": "MBBS, MD (Pediatrics)", "available_days": ["Mon", "Wed", "Fri"],
+     "visiting_hours": "10:00 AM - 3:00 PM"},
+    {"first": "Suresh", "last": "Reddy", "specialization": "Neurologist", "experience": 17,
+     "qualification": "MBBS, DM (Neurology)", "available_days": ["Tue", "Thu"],
+     "visiting_hours": "1:00 PM - 5:00 PM"},
+    {"first": "Meenal", "last": "Gupta", "specialization": "Gynecologist", "experience": 15,
+     "qualification": "MBBS, MS (Obstetrics & Gynecology)", "available_days": ["Mon", "Wed", "Fri"],
+     "visiting_hours": "9:00 AM - 12:00 PM"},
+    {"first": "Vivek", "last": "Bhatt", "specialization": "ENT Specialist", "experience": 10,
+     "qualification": "MBBS, MS (ENT)", "available_days": ["Tue", "Thu", "Sat"],
+     "visiting_hours": "3:00 PM - 6:00 PM"},
+    {"first": "Alia", "last": "Malhotra", "specialization": "Psychiatrist", "experience": 12,
+     "qualification": "MBBS, MD (Psychiatry)", "available_days": ["Wed", "Fri"],
+     "visiting_hours": "11:00 AM - 2:00 PM"},
+    {"first": "Rajat", "last": "Joshi", "specialization": "Dentist", "experience": 7,
+     "qualification": "BDS, MDS", "available_days": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+     "visiting_hours": "10:00 AM - 4:00 PM"},
+    {"first": "Divya", "last": "Rao", "specialization": "Ophthalmologist", "experience": 16,
+     "qualification": "MBBS, MS (Ophthalmology)", "available_days": ["Mon", "Thu", "Sat"],
+     "visiting_hours": "9:00 AM - 1:00 PM"},
 ]
 
 PATIENTS = [
@@ -67,8 +91,37 @@ PATIENTS = [
      "allergies": "None known", "past_diseases": []},
     {"first": "Rohit", "last": "Desai", "gender": "M", "blood_group": "B+", "age": 60,
      "allergies": "Aspirin", "past_diseases": ["Osteoarthritis (2022)", "Type 2 Diabetes (2021)"]},
+    {"first": "Ishaan", "last": "Kapoor", "gender": "M", "blood_group": "O+", "age": 8,
+     "allergies": "None known", "past_diseases": []},
+    {"first": "Zara", "last": "Sheikh", "gender": "F", "blood_group": "A+", "age": 6,
+     "allergies": "Eggs", "past_diseases": ["Mild Asthma (2025)"]},
+    {"first": "Kabir", "last": "Chatterjee", "gender": "M", "blood_group": "B-", "age": 34,
+     "allergies": "None known", "past_diseases": []},
+    {"first": "Naina", "last": "Bose", "gender": "F", "blood_group": "AB-", "age": 27,
+     "allergies": "Latex", "past_diseases": ["Migraine (2024)"]},
+    {"first": "Aditya", "last": "Kulkarni", "gender": "M", "blood_group": "O+", "age": 67,
+     "allergies": "None known", "past_diseases": ["Hypertension (2018)", "Coronary Artery Disease (2022)"]},
+    {"first": "Priyanka", "last": "Iyer", "gender": "F", "blood_group": "B+", "age": 42,
+     "allergies": "Sulfa drugs", "past_diseases": ["Hypothyroidism (2020)"]},
+    {"first": "Dev", "last": "Patel", "gender": "M", "blood_group": "A+", "age": 55,
+     "allergies": "None known", "past_diseases": ["Type 2 Diabetes (2019)"]},
+    {"first": "Ritu", "last": "Sinha", "gender": "F", "blood_group": "O-", "age": 15,
+     "allergies": "None known", "past_diseases": []},
+    {"first": "Manav", "last": "Choudhury", "gender": "M", "blood_group": "AB+", "age": 71,
+     "allergies": "Aspirin", "past_diseases": ["Osteoarthritis (2015)", "Hypertension (2017)"]},
+    {"first": "Alisha", "last": "Menon", "gender": "F", "blood_group": "B+", "age": 33,
+     "allergies": "Penicillin", "past_diseases": []},
+    {"first": "Yusuf", "last": "Ansari", "gender": "M", "blood_group": "A-", "age": 48,
+     "allergies": "None known", "past_diseases": ["Fatty Liver (2023)"]},
+    {"first": "Tara", "last": "Krishnan", "gender": "F", "blood_group": "O+", "age": 39,
+     "allergies": "None known", "past_diseases": ["Anxiety Disorder (2022)"]},
 ]
 
+# Report templates cover the panels report_summarizer.py + lab_reference_ranges.json
+# know how to parse. Value ranges deliberately span both normal and abnormal so
+# some (not all) seeded reports come back flagged -- a mix is more realistic
+# and more useful for a demo than either "everything flagged" or "everything
+# clean".
 REPORT_TEMPLATES = [
     {
         "report_type": "Blood Test (CBC)",
@@ -99,6 +152,28 @@ REPORT_TEMPLATES = [
             "hr": random.randint(58, 105),
             "rhythm": random.choice(["Normal sinus rhythm", "Sinus tachycardia", "Normal sinus rhythm"]),
             "pr": random.randint(120, 200),
+        },
+    },
+    {
+        "report_type": "Liver Function Test",
+        "raw_text": ("Liver Function Test\nALT: {alt} U/L\nAST: {ast} U/L"),
+        "values": lambda: {
+            "alt": random.randint(15, 95),
+            "ast": random.randint(10, 70),
+        },
+    },
+    {
+        "report_type": "Thyroid Profile",
+        "raw_text": ("Thyroid Profile\nTSH: {tsh} mIU/L"),
+        "values": lambda: {
+            "tsh": round(random.uniform(0.2, 6.5), 1),
+        },
+    },
+    {
+        "report_type": "HbA1c (Diabetes Panel)",
+        "raw_text": ("HbA1c Test\nHbA1c: {hba1c} %"),
+        "values": lambda: {
+            "hba1c": round(random.uniform(4.5, 8.2), 1),
         },
     },
 ]
@@ -205,21 +280,30 @@ class Command(BaseCommand):
         for patient in patients:
             for _ in range(random.randint(1, 3)):
                 doctor = random.choice(doctors)
-                offset = random.randint(-30, 20)
+                offset = random.randint(-45, 20)
                 appt_date = date.today() + timedelta(days=offset)
-                status = "completed" if offset < 0 else "upcoming"
+                if offset < 0:
+                    # A small fraction of past appointments were cancelled --
+                    # more realistic than every past visit being completed.
+                    status = "cancelled" if random.random() < 0.1 else "completed"
+                else:
+                    status = "upcoming"
                 Appointment.objects.create(
                     patient=patient, doctor=doctor, date=appt_date,
                     time=random.choice(["9:00 AM", "9:30 AM", "10:00 AM", "11:00 AM", "2:00 PM", "2:30 PM"]),
                     status=status,
-                    reason=random.choice(["General checkup", "Follow-up", "Fever and fatigue", "Routine screening"]),
+                    reason=random.choice([
+                        "General checkup", "Follow-up", "Fever and fatigue",
+                        "Routine screening", "Vaccination", "Skin rash",
+                        "Joint pain", "Annual physical",
+                    ]),
                 )
 
     def _seed_reports(self, patients):
         for patient in patients:
-            num_reports = random.randint(1, 2)
-            for _ in range(num_reports):
-                template = random.choice(REPORT_TEMPLATES)
+            num_reports = random.randint(1, 3)
+            templates = random.sample(REPORT_TEMPLATES, k=min(num_reports, len(REPORT_TEMPLATES)))
+            for template in templates:
                 values = template["values"]()
                 raw_text = template["raw_text"].format(**values)
                 lines = raw_text.split("\n")[1:]  # drop title line for the image body
@@ -228,11 +312,17 @@ class Command(BaseCommand):
                     patient=patient, report_type=template["report_type"],
                     hospital="City Care Hospital", raw_text=raw_text,
                 )
-                filename = f"{template['report_type'].split(' ')[0].lower()}_{patient.patient_id}.png"
+                slug = template["report_type"].split(" ")[0].lower()
+                filename = f"{slug}_{patient.patient_id}.png"
                 report.file.save(filename, ContentFile(img_buf.read()), save=False)
                 report.save()
 
     def _seed_prescriptions(self, patients, doctors):
+        # Deliberately free of any pair listed in data/drug_interactions.csv --
+        # these represent prescriptions a doctor already safely wrote, so a
+        # dangerous combination here would be a data bug, not a demo feature.
+        # To demo the live interaction check, use the Write Prescription form
+        # in the app with e.g. "Aspirin" + "Warfarin".
         medicine_pool = [
             {"name": "Paracetamol", "dosage": "500mg", "frequency": "Twice daily"},
             {"name": "Ferrous Sulfate", "dosage": "325mg", "frequency": "Once daily"},
@@ -240,6 +330,12 @@ class Command(BaseCommand):
             {"name": "Atorvastatin", "dosage": "10mg", "frequency": "Once at night"},
             {"name": "Cetirizine", "dosage": "10mg", "frequency": "Once at night"},
             {"name": "Amlodipine", "dosage": "5mg", "frequency": "Once daily"},
+            {"name": "Azithromycin", "dosage": "500mg", "frequency": "Once daily for 3 days"},
+            {"name": "Pantoprazole", "dosage": "40mg", "frequency": "Once daily before breakfast"},
+            {"name": "Vitamin D3", "dosage": "60000 IU", "frequency": "Once weekly"},
+            {"name": "Losartan", "dosage": "50mg", "frequency": "Once daily"},
+            {"name": "Levothyroxine", "dosage": "50mcg", "frequency": "Once daily on empty stomach"},
+            {"name": "Insulin Glargine", "dosage": "10 units", "frequency": "Once at night"},
         ]
         for patient in patients:
             doctor = random.choice(doctors)
