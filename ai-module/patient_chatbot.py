@@ -14,7 +14,7 @@ crashing -- same pattern as report_summarizer.py and patient_history_summarizer.
 """
 
 import json
-from utils.claude_client import get_narrative
+from utils.grok_client import get_narrative
 
 SYSTEM_PROMPT = """You are a helpful assistant inside a hospital management app.
 You can answer general health questions AND questions about the patient's own
