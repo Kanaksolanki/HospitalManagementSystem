@@ -1,7 +1,45 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { mockUsers } from "../mock/mockData";
+import { login as loginRequest, getMe } from "../api/authApi";
 
 const AuthContext = createContext(null);
+
+function ageFromDob(dobStr) {
+  if (!dobStr) return null;
+  const dob = new Date(dobStr);
+  const diffMs = Date.now() - dob.getTime();
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24 * 365.25));
+}
+
+// Reshapes the backend's /api/auth/me/ response (id, username, role, profile: {...})
+// into the flatter `user` shape the existing pages already read (name,
+// displayId, blood_group, specialization, etc) -- so pages don't need to
+// change just because auth got wired to the real API.
+function buildUser(me) {
+  const profile = me.profile || {};
+  const name = [me.first_name, me.last_name].filter(Boolean).join(" ") || me.username;
+
+  const base = { id: me.id, name, email: me.email, role: me.role, phone: me.phone };
+
+  if (me.role === "patient") {
+    return {
+      ...base,
+      displayId: profile.patient_id,
+      age: ageFromDob(profile.dob),
+      gender: profile.gender === "F" ? "Female" : profile.gender === "M" ? "Male" : profile.gender,
+      blood_group: profile.blood_group,
+      allergies: profile.allergies,
+    };
+  }
+  if (me.role === "doctor") {
+    return {
+      ...base,
+      displayId: profile.doctor_id,
+      specialization: profile.specialization,
+      rating: profile.rating,
+    };
+  }
+  return base;
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
@@ -14,16 +52,31 @@ export function AuthProvider({ children }) {
     else localStorage.removeItem("hms_user");
   }, [user]);
 
-  // TODO: replace with authApi.login() once Diksha's /api/auth/login/ is live.
-  // Kept synchronous + mock-based so frontend work isn't blocked on backend.
-  const loginUser = (email, password) => {
-    const match = mockUsers.find((u) => u.email === email && u.password === password);
-    if (!match) return { success: false, error: "Invalid email or password." };
-    setUser(match);
-    return { success: true, user: match };
+  const loginUser = async (email, password) => {
+    try {
+      const { data: tokens } = await loginRequest({ email, password });
+      localStorage.setItem("access_token", tokens.access);
+      localStorage.setItem("refresh_token", tokens.refresh);
+
+      const { data: me } = await getMe();
+      const builtUser = buildUser(me);
+      setUser(builtUser);
+      return { success: true, user: builtUser };
+    } catch (err) {
+      const detail =
+        err?.response?.data?.detail ||
+        (err?.code === "ERR_NETWORK"
+          ? "Can't reach the backend. Is it running on http://localhost:8000?"
+          : "Invalid email or password.");
+      return { success: false, error: detail };
+    }
   };
 
-  const logoutUser = () => setUser(null);
+  const logoutUser = () => {
+    setUser(null);
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+  };
 
   return (
     <AuthContext.Provider value={{ user, loginUser, logoutUser }}>

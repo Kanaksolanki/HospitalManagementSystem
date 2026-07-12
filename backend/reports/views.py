@@ -9,6 +9,7 @@ from .serializers import MedicalReportSerializer
 from patients.models import Patient
 
 from report_summarizer import summarize_report
+from ocr_extractor import extract_report_text
 
 
 class UploadReportView(APIView):
@@ -21,7 +22,23 @@ class UploadReportView(APIView):
         except Patient.DoesNotExist:
             return Response({"detail": "Only patients can upload reports"}, status=403)
 
-        raw_text = request.data.get("raw_text", "")
+        uploaded_file = request.FILES.get("file")
+        raw_text = (request.data.get("raw_text") or "").strip()
+        ocr_method = "typed" if raw_text else ""
+        ocr_error = None
+
+        # If the patient didn't type/paste the text themselves, try reading
+        # it straight from the uploaded file -- a real text layer for PDFs
+        # exported by a lab, or OCR for a scanned PDF / phone photo.
+        if not raw_text and uploaded_file:
+            file_bytes = uploaded_file.read()
+            uploaded_file.seek(0)  # rewind so it can still be saved to disk below
+            ocr_result = extract_report_text(
+                file_bytes, filename=uploaded_file.name, content_type=uploaded_file.content_type,
+            )
+            raw_text = ocr_result["text"]
+            ocr_method = ocr_result["method"] or ""
+            ocr_error = ocr_result["error"]
 
         # Run the AI summarizer if we have text to work with. This never
         # blocks the upload if it fails -- a report should still save even
@@ -39,13 +56,17 @@ class UploadReportView(APIView):
         report = MedicalReport.objects.create(
             patient=patient,
             report_type=request.data.get("report_type", ""),
-            file=request.FILES.get("file"),
+            file=uploaded_file,
             hospital=request.data.get("hospital", ""),
             raw_text=raw_text,
+            ocr_method=ocr_method,
             ai_summary=ai_summary,
             ai_flags=ai_flags,
         )
-        return Response(MedicalReportSerializer(report).data, status=201)
+        data = MedicalReportSerializer(report).data
+        if ocr_error:
+            data["ocr_error"] = ocr_error
+        return Response(data, status=201)
 
 
 class MyReportsView(APIView):

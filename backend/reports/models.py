@@ -19,6 +19,13 @@ class MedicalReport(models.Model):
     # would come from OCR on the uploaded file; for MVP it's populated directly
     # (typed at upload time, or filled in by the seed script for sample data).
     raw_text = models.TextField(blank=True)
+    # How raw_text was obtained: "typed" (patient typed/pasted it), "pdf_text"
+    # (real text layer in an uploaded PDF), "pdf_ocr" (scanned/image-only PDF,
+    # extracted via OCR), "image_ocr" (a photo of a printed report, via OCR),
+    # or blank if no text was available at all. OCR-derived text is lower
+    # confidence than a text layer or manual typing, so this is worth
+    # surfacing to whoever reviews the report later.
+    ocr_method = models.CharField(max_length=20, blank=True)
     ai_summary = models.TextField(blank=True)
     ai_flags = models.JSONField(default=list, blank=True)
 

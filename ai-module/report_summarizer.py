@@ -27,30 +27,59 @@ from utils.claude_client import get_narrative
 
 REFERENCE_PATH = os.path.join(os.path.dirname(__file__), "data", "lab_reference_ranges.json")
 
-# Maps a reference-range key to the regex patterns that might name it in raw
-# report text. Multiple aliases per key since different report templates /
-# hospitals phrase things differently (e.g. "WBC Count" vs "White Blood Cells").
-FIELD_PATTERNS = {
-    "hemoglobin": [r"hemoglobin\s*[:\-]?\s*([\d.]+)"],
-    "wbc": [r"wbc\s*(?:count)?\s*[:\-]?\s*([\d.]+)", r"white blood cell[s]?\s*[:\-]?\s*([\d.]+)"],
-    "platelets": [r"platelet[s]?\s*(?:count)?\s*[:\-]?\s*([\d.]+)"],
-    "fasting_sugar": [r"(?:fasting\s*)?blood\s*sugar\s*[:\-]?\s*([\d.]+)"],
-    "total_cholesterol": [r"total\s*cholesterol\s*[:\-]?\s*([\d.]+)"],
-    "ldl": [r"\bldl\s*[:\-]?\s*([\d.]+)"],
-    "hdl": [r"\bhdl\s*[:\-]?\s*([\d.]+)"],
-    "triglycerides": [r"triglycerides\s*[:\-]?\s*([\d.]+)"],
-    "heart_rate": [r"heart\s*rate\s*[:\-]?\s*([\d.]+)"],
-    "creatinine": [r"creatinine\s*[:\-]?\s*([\d.]+)"],
-    "alt": [r"\balt\s*[:\-]?\s*([\d.]+)", r"alanine\s*(?:transaminase|aminotransferase)\s*[:\-]?\s*([\d.]+)"],
-    "ast": [r"\bast\s*[:\-]?\s*([\d.]+)", r"aspartate\s*(?:transaminase|aminotransferase)\s*[:\-]?\s*([\d.]+)"],
-    "tsh": [r"\btsh\s*[:\-]?\s*([\d.]+)"],
+# Maps a reference-range key to regex patterns that might *name* it in report
+# text -- these only match the label, not the value. Real lab report PDFs
+# (especially table-formatted ones, once extracted as plain text) almost
+# never put a label and its number on the same line -- there's usually a
+# methodology annotation in between, e.g.:
+#
+#   Haemoglobin
+#   Cyanide free
+#   12
+#   gm/dl
+#   12.0-15.0
+#
+# So extraction works in two steps: find a line naming the field, then look
+# at the next few lines for the first one that's just a number (see
+# extract_lab_values below). Aliases also cover regional terminology common
+# in Indian lab reports (Haemoglobin, TLC, SGOT/SGPT) alongside the more
+# generic US-style names.
+FIELD_LABEL_PATTERNS = {
+    "hemoglobin": [r"h(?:a)?emoglobin"],
+    "wbc": [r"\bwbc\b", r"white\s*blood\s*cell", r"\btlc\b", r"total\s*leu[ck]ocyte\s*count"],
+    "platelets": [r"platelet"],
+    "fasting_sugar": [r"fasting\s*blood\s*sugar", r"\bfbs\b", r"blood\s*sugar"],
+    "total_cholesterol": [r"total\s*cholesterol"],
+    "ldl": [r"\bldl\b"],
+    "hdl": [r"\bhdl\b"],
+    "triglycerides": [r"triglycerides"],
+    "heart_rate": [r"heart\s*rate"],
+    "creatinine": [r"creatinine"],
+    "alt": [r"\balt\b", r"\bsgpt\b", r"alanine\s*(?:transaminase|aminotransferase)"],
+    "ast": [r"\bast\b", r"\bsgot\b", r"aspartate\s*(?:transaminase|aminotransferase)"],
+    "tsh": [r"\btsh\b"],
     # NOTE: real HbA1c interpretation is categorical (normal <5.7%, prediabetes
     # 5.7-6.4%, diabetes >=6.5%), not a simple low/high band like the other
     # fields here. We're using the same low/high mechanism for consistency in
     # this MVP, so "high" for HbA1c really means "at or above normal" -- call
     # this out if it comes up in a demo/interview.
-    "hba1c": [r"hba1c\s*[:\-]?\s*([\d.]+)", r"glycated\s*hemoglobin\s*[:\-]?\s*([\d.]+)"],
+    "hba1c": [r"hba1c", r"glycated\s*h(?:a)?emoglobin"],
 }
+
+# A field's value is the first standalone number found on or after its label
+# line. Requiring the number to be at the START of the line (for lookahead
+# lines) is what lets us skip over methodology annotations like "Calculated"
+# or "Flowcytometry", which never start with a digit.
+NUMBER_RE = re.compile(r"-?\d+\.?\d*")
+
+# WBC and Platelet counts are very commonly reported in *thousands* per uL on
+# real lab report templates (units like "th/cumm", "thou/uL", "x10^3/uL",
+# "K/uL") even though lab_reference_ranges.json's ranges are in absolute
+# counts per uL. Missing this turns a perfectly normal 6.33 th/cumm into a
+# false "Low WBC Count (6.33)" flag. We check the unit text right after the
+# matched number and scale up by 1000 if it looks like a thousands unit.
+COUNT_FIELDS_REPORTED_IN_THOUSANDS = {"wbc", "platelets"}
+THOUSANDS_UNIT_RE = re.compile(r"(thou|th|k)(?:\b|/)|x\s*10\^?\s*3", re.IGNORECASE)
 
 
 def _load_reference_ranges() -> dict:
@@ -60,16 +89,41 @@ def _load_reference_ranges() -> dict:
     return {}
 
 
+def _find_value_near_label(lines: list, label_patterns: list, lookahead: int = 4):
+    """Find the first line matching any of label_patterns, then return
+    (value, unit_hint) from the first number on that same line, or on one of
+    the next `lookahead` lines (whichever comes first). unit_hint is
+    whatever text immediately follows the matched number's line -- usually
+    the units column in a table-style report. Returns (None, None) if the
+    label isn't found, or is found but no nearby number is."""
+    for i, line in enumerate(lines):
+        if not any(re.search(p, line, re.IGNORECASE) for p in label_patterns):
+            continue
+        same_line_match = NUMBER_RE.search(line)
+        if same_line_match:
+            return float(same_line_match.group()), line
+        for j in range(i + 1, min(i + 1 + lookahead, len(lines))):
+            next_line_match = NUMBER_RE.match(lines[j])
+            if next_line_match:
+                unit_hint = lines[j + 1] if j + 1 < len(lines) else ""
+                return float(next_line_match.group()), unit_hint
+        # This occurrence of the label had no number nearby (e.g. mentioned
+        # in a comment paragraph) -- keep scanning in case it appears again
+        # later, in an actual results row.
+    return None, None
+
+
 def extract_lab_values(report_text: str) -> dict:
     """Stage 1: pull out any recognized lab values from free text."""
-    text = report_text.lower()
+    lines = [line.strip() for line in report_text.splitlines() if line.strip()]
     found = {}
-    for key, patterns in FIELD_PATTERNS.items():
-        for pattern in patterns:
-            match = re.search(pattern, text)
-            if match:
-                found[key] = float(match.group(1))
-                break
+    for key, label_patterns in FIELD_LABEL_PATTERNS.items():
+        value, unit_hint = _find_value_near_label(lines, label_patterns)
+        if value is None:
+            continue
+        if key in COUNT_FIELDS_REPORTED_IN_THOUSANDS and unit_hint and THOUSANDS_UNIT_RE.search(unit_hint):
+            value *= 1000
+        found[key] = value
     return found
 
 

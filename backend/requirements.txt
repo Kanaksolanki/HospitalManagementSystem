@@ -4,4 +4,22 @@ djangorestframework-simplejwt>=5.3
 psycopg2-binary>=2.9
 django-cors-headers>=4.3
 python-dotenv>=1.0
+
 Pillow>=10.0
+scikit-learn>=1.4
+pandas>=2.2
+numpy>=1.26
+joblib>=1.3
+transformers>=4.40   # only needed if using a pretrained summarization model
+anthropic>=0.40      # Claude API — used by report_summarizer.py and patient_history_summarizer.py
+python-dotenv>=1.0   # loads ANTHROPIC_API_KEY from a local .env file
+openai>=1.0          # Groq client (OpenAI-compatible) — used by patient_chatbot.py
+PyMuPDF>=1.24        # PDF text-layer extraction + rendering — used by ocr_extractor.py
+pytesseract>=0.3.10  # OCR wrapper — used by ocr_extractor.py
+Pillow>=10.0         # image preprocessing for OCR
+ 
+# pytesseract also needs the actual Tesseract OCR engine installed on the
+# system (it's not a Python package). On Ubuntu/Debian:
+#   sudo apt-get install tesseract-ocr
+# On macOS:
+#   brew install tesseract

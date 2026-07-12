@@ -9,9 +9,13 @@ export default function Login() {
   const { loginUser } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = loginUser(email, password);
+    setSubmitting(true);
+    const result = await loginUser(email, password);
+    setSubmitting(false);
     if (!result.success) {
       setError(result.error);
       return;
@@ -19,9 +23,11 @@ export default function Login() {
     navigate(result.user.role === "doctor" ? "/doctor" : "/patient");
   };
 
+  // Matches the demo accounts created by backend/accounts/management/commands/seed_sample_data.py
+  // (default password for every seeded account: demo1234).
   const fillDemo = (role) => {
-    if (role === "patient") { setEmail("riya.patient@demo.com"); setPassword("demo123"); }
-    else { setEmail("sharma.doctor@demo.com"); setPassword("demo123"); }
+    if (role === "patient") { setEmail("demo_pt_kapoor_riya@demo.hms"); setPassword("demo1234"); }
+    else { setEmail("demo_dr_sharma@demo.hms"); setPassword("demo1234"); }
   };
 
   return (
@@ -41,7 +47,9 @@ export default function Login() {
             <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
           {error && <p style={{ color: "var(--danger)", fontSize: 13, marginTop: -8 }}>{error}</p>}
-          <button type="submit" className="btn btn-primary btn-block">Log in</button>
+          <button type="submit" className="btn btn-primary btn-block" disabled={submitting}>
+            {submitting ? "Signing in…" : "Log in"}
+          </button>
         </form>
 
         <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
