@@ -61,3 +61,25 @@ class DoctorQueueView(APIView):
 
         appointments = Appointment.objects.filter(doctor=doctor, date=date.today())
         return Response(AppointmentSerializer(appointments, many=True).data)
+
+
+class DoctorAppointmentsView(APIView):
+    """
+    GET /api/appointments/doctor-mine/ -> ALL of the logged-in doctor's
+    appointments, any date (past, today, upcoming).
+
+    This is distinct from /queue/ (today's appointments only, for a
+    waiting-room view) -- a patient can book for any future date, and
+    without this endpoint there was no way for a doctor to see that booking
+    at all until the day itself arrived.
+    """
+    permission_classes = [IsDoctor]
+
+    def get(self, request):
+        try:
+            doctor = Doctor.objects.get(user=request.user)
+        except Doctor.DoesNotExist:
+            return Response({"detail": "Only doctors have appointments here"}, status=403)
+
+        appointments = Appointment.objects.filter(doctor=doctor).order_by("date", "time")
+        return Response(AppointmentSerializer(appointments, many=True).data)

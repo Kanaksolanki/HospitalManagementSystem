@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { login as loginRequest, getMe } from "../api/authApi";
+import { login as loginRequest, register as registerRequest, logout as logoutRequest, getMe } from "../api/authApi";
 
 const AuthContext = createContext(null);
 
@@ -52,6 +52,40 @@ export function AuthProvider({ children }) {
     else localStorage.removeItem("hms_user");
   }, [user]);
 
+  const registerUser = async (formData) => {
+    try {
+      const { data } = await registerRequest(formData);
+
+      // Doctor accounts don't get usable tokens until a hospital admin
+      // approves them (see accounts/views.py RegisterView) -- surface that
+      // instead of trying to log them in.
+      if (formData.role === "doctor") {
+        return { success: true, pendingApproval: true, detail: data.detail };
+      }
+
+      localStorage.setItem("access_token", data.access);
+      localStorage.setItem("refresh_token", data.refresh);
+      const { data: me } = await getMe();
+      const builtUser = buildUser(me);
+      setUser(builtUser);
+      return { success: true, pendingApproval: false, user: builtUser };
+    } catch (err) {
+      const fieldErrors = err?.response?.data;
+      const firstError =
+        typeof fieldErrors === "object" && fieldErrors
+          ? Object.values(fieldErrors).flat()[0]
+          : null;
+      return {
+        success: false,
+        error:
+          firstError ||
+          (err?.code === "ERR_NETWORK"
+            ? "Can't reach the backend. Is it running on http://localhost:8000?"
+            : "Something went wrong creating your account."),
+      };
+    }
+  };
+
   const loginUser = async (email, password) => {
     try {
       const { data: tokens } = await loginRequest({ email, password });
@@ -73,13 +107,17 @@ export function AuthProvider({ children }) {
   };
 
   const logoutUser = () => {
+    const refreshToken = localStorage.getItem("refresh_token");
     setUser(null);
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
+    // Best-effort -- actually revokes the token server-side so it can't be
+    // replayed, but the user is logged out locally either way.
+    if (refreshToken) logoutRequest(refreshToken).catch(() => {});
   };
 
   return (
-    <AuthContext.Provider value={{ user, loginUser, logoutUser }}>
+    <AuthContext.Provider value={{ user, loginUser, registerUser, logoutUser }}>
       {children}
     </AuthContext.Provider>
   );

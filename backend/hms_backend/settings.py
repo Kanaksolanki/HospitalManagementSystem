@@ -30,6 +30,7 @@ INSTALLED_APPS = [
 
     "rest_framework",
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
 
     # project apps
@@ -106,6 +107,28 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    # Throttles login/register specifically (both use throttle_scope = "auth")
+    # against brute-force credential guessing and signup spam. Keyed by IP
+    # for anonymous requests, which is what both those endpoints are.
+    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.ScopedRateThrottle"],
+    "DEFAULT_THROTTLE_RATES": {
+        "auth": "10/min",
+    },
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    # Short-lived access token limits the damage window if one leaks; the
+    # refresh token is what actually needs to survive a session.
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    # Every refresh issues a new refresh token and blacklists the old one --
+    # so a stolen refresh token only works once before it's dead, rather
+    # than being a permanent skeleton key for 7 days.
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
 }
 
 LANGUAGE_CODE = "en-us"

@@ -23,13 +23,6 @@ export default function Login() {
     navigate(result.user.role === "doctor" ? "/doctor" : "/patient");
   };
 
-  // Matches the demo accounts created by backend/accounts/management/commands/seed_sample_data.py
-  // (default password for every seeded account: demo1234).
-  const fillDemo = (role) => {
-    if (role === "patient") { setEmail("demo_pt_kapoor_riya@demo.hms"); setPassword("demo1234"); }
-    else { setEmail("demo_dr_sharma@demo.hms"); setPassword("demo1234"); }
-  };
-
   return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
       <div className="card" style={{ width: 380 }}>
@@ -51,15 +44,6 @@ export default function Login() {
             {submitting ? "Signing in…" : "Log in"}
           </button>
         </form>
-
-        <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-          <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => fillDemo("patient")}>
-            Try as Patient
-          </button>
-          <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => fillDemo("doctor")}>
-            Try as Doctor
-          </button>
-        </div>
 
         <p style={{ marginTop: 20, fontSize: 13, textAlign: "center" }}>
           No account? <Link to="/signup">Sign up</Link>
