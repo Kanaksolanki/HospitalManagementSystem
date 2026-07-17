@@ -3,6 +3,7 @@ import { Send, Sparkles } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { chatbotRules } from "../mock/mockData";
 import PulseDivider from "../components/common/PulseDivider";
+import { sendChatMessage } from "../api/chatbotApi";
 
 const SUGGESTIONS = ["I have a fever", "What does my CBC report mean?", "Headache for 2 days", "Book an appointment"];
 
@@ -26,17 +27,21 @@ export default function Assistant() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, typing]);
 
-  const send = (text) => {
+  const send = async (text) => {
     const trimmed = text.trim();
     if (!trimmed) return;
     setMessages((prev) => [...prev, { from: "user", text: trimmed }]);
     setInput("");
     setTyping(true);
-    // TODO: replace with a real backend call to an LLM-backed medical assistant endpoint.
-    setTimeout(() => {
-      setMessages((prev) => [...prev, { from: "bot", text: getReply(trimmed) }]);
+    try {
+      const res = await sendChatMessage(trimmed);
+      setMessages((prev) => [...prev, { from: "bot", text: res.data.reply }]);
+    } catch (err) {
+      const detail = err?.response?.data?.detail;
+      setMessages((prev) => [...prev, { from: "bot", text: detail || "Sorry, I couldn't reach the assistant right now. Please try again." }]);
+    } finally {
       setTyping(false);
-    }, 600);
+    }
   };
 
   const handleSubmit = (e) => {
